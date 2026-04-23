@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import API from "../services/api";
 
 function UserList() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+  const [role, setRole] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchUsers();
@@ -12,27 +16,91 @@ function UserList() {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("https://dummyjson.com/users");
-      setUsers(response.data.users);
-    } catch (err) {
+      const res = await API.get("/users");
+      setUsers(res.data.users);
+    } catch {
       setError("Failed to fetch users");
     } finally {
       setLoading(false);
     }
   };
 
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Are you sure?");
+    if (!confirmDelete) return;
+
+    try {
+      await API.delete(`/users/${id}`);
+      setUsers(users.filter((user) => user.id !== id));
+    } catch {
+      alert("Delete failed");
+    }
+  };
+
+  const filteredUsers = users
+    .filter((user) =>
+      `${user.firstName} ${user.lastName}`
+        .toLowerCase()
+        .includes(search.toLowerCase())
+    )
+    .filter((user) =>
+      role ? user.role?.toLowerCase() === role.toLowerCase() : true
+    );
+
   if (loading) return <h2>Loading...</h2>;
   if (error) return <h2>{error}</h2>;
 
   return (
     <div>
-      <h1>User List</h1>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <h1>User List</h1>
+        <button onClick={() => navigate("/users/add")}>Add User</button>
+      </div>
 
-      {users.map((user) => (
-        <div key={user.id} style={{ border: "1px solid gray", margin: "10px", padding: "10px" }}>
-          <p>Name: {user.firstName} {user.lastName}</p>
+      <div style={{ display: "flex", gap: "10px", margin: "10px 0" }}>
+        <input
+          placeholder="Search by name"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+
+        <select value={role} onChange={(e) => setRole(e.target.value)}>
+          <option value="">All</option>
+          <option value="admin">Admin</option>
+          <option value="user">User</option>
+        </select>
+      </div>
+
+      {filteredUsers.map((user) => (
+        <div
+          key={user.id}
+          style={{
+            border: "1px solid gray",
+            margin: "10px",
+            padding: "10px",
+          }}
+        >
+          <p>
+            Name: {user.firstName} {user.lastName}
+          </p>
           <p>Email: {user.email}</p>
           <p>Phone: {user.phone}</p>
+
+          <button
+            style={{ marginRight: "5px" }}
+            onClick={() => navigate(`/users/${user.id}`)}
+          >
+            View
+          </button>
+
+          <button
+            style={{ marginRight: "5px" }}
+            onClick={() => navigate(`/users/edit/${user.id}`)}
+          >
+            Edit
+          </button>
+
+          <button onClick={() => handleDelete(user.id)}>Delete</button>
         </div>
       ))}
     </div>
