@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import API from "../services/api";
+import "../styles/EditUser.css";
 
 function EditUser() {
   const { id } = useParams();
@@ -15,6 +16,8 @@ function EditUser() {
   });
 
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
 
   useEffect(() => {
     fetchUser();
@@ -26,6 +29,8 @@ function EditUser() {
       setForm(res.data);
     } catch {
       setError("Failed to load user");
+    } finally {
+      setFetching(false);
     }
   };
 
@@ -36,20 +41,27 @@ function EditUser() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    setLoading(true);
+
     try {
       await API.put(`/users/${id}`, form);
-      alert("User updated");
+      alert("User updated successfully");
       navigate("/users");
     } catch {
       setError("Update failed");
+    } finally {
+      setLoading(false);
     }
   };
 
+  if (fetching) return <h2>Loading user...</h2>;
+
   return (
-    <div>
+    <div className="container">
+
       <h1>Edit User</h1>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
 
       <form onSubmit={handleSubmit}>
         <input name="firstName" value={form.firstName} onChange={handleChange} />
@@ -62,8 +74,11 @@ function EditUser() {
           <option value="admin">Admin</option>
         </select>
 
-        <button type="submit">Update</button>
+        <button disabled={loading}>
+          {loading ? "Updating..." : "Update"}
+        </button>
       </form>
+
     </div>
   );
 }

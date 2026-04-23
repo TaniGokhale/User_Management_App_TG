@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
+import "../styles/AddUser.css";
 
 function AddUser() {
   const navigate = useNavigate();
@@ -21,20 +22,23 @@ function AddUser() {
   };
 
   const validate = () => {
-    if (form.firstName.trim().length < 3) return "First name must be at least 3 characters";
-    if (!form.lastName.trim()) return "Last name is required";
+    if (form.firstName.trim().length < 3)
+      return "First name must be at least 3 characters";
+      if (!form.lastName.trim())
+      return "Last name is required";
 
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(form.email)) return "Invalid email";
+    if (!emailPattern.test(form.email))
+      return "Invalid email";
 
-    if (form.phone.length !== 10) return "Phone must be 10 digits";
+    if (form.phone.length !== 10)
+      return "Phone must be 10 digits";
 
     return "";
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const validationError = validate();
     if (validationError) {
       setError(validationError);
@@ -55,36 +59,16 @@ function AddUser() {
   };
 
   return (
-    <div>
-      <h1>Add User</h1>
+    <div className="container">
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      <h1>Add User</h1>
+      {error && <p className="error">{error}</p>}
 
       <form onSubmit={handleSubmit}>
-        <input
-          name="firstName"
-          placeholder="First Name"
-          onChange={handleChange}
-        />
-
-        <input
-          name="lastName"
-          placeholder="Last Name"
-          onChange={handleChange}
-        />
-
-        <input
-          name="email"
-          placeholder="Email"
-          onChange={handleChange}
-        />
-
-        <input
-          name="phone"
-          placeholder="Phone"
-          onChange={handleChange}
-        />
-
+        <input name="firstName" placeholder="First Name" onChange={handleChange} />
+       <input name="lastName" placeholder="Last Name" onChange={handleChange} />
+        <input name="email" placeholder="Email" onChange={handleChange} />
+       <input name="phone" placeholder="Phone" onChange={handleChange} />
         <select name="role" onChange={handleChange}>
           <option value="user">User</option>
           <option value="admin">Admin</option>
@@ -94,6 +78,7 @@ function AddUser() {
           {loading ? "Adding..." : "Add User"}
         </button>
       </form>
+
     </div>
   );
 }

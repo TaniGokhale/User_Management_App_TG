@@ -4,15 +4,23 @@ import AddUser from "./pages/AddUser";
 import EditUser from "./pages/EditUser";
 import ViewUser from "./pages/ViewUser";
 
+import "./App.css"
+
 function App() {
   return (
-    <Routes>
+<>
+
+<h1>USER MANAGEMENT APPLICATION</h1><hr></hr>
+<Routes>
       <Route path="/" element={<Navigate to="/users" />} />
       <Route path="/users" element={<UserList />} />
       <Route path="/users/add" element={<AddUser />} />
       <Route path="/users/edit/:id" element={<EditUser />} />
       <Route path="/users/:id" element={<ViewUser />} />
     </Routes>
+</>
+
+    
   );
 }
 

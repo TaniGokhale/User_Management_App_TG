@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../services/api";
 
+import "../styles/ViewUser.css";
+
 function ViewUser() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -26,14 +28,15 @@ function ViewUser() {
   if (!user) return <h2>Loading...</h2>;
 
   return (
-    <div>
+    <div className="container">
+
       <h1>User Details</h1>
 
       <p>Name: {user.firstName} {user.lastName}</p>
       <p>Email: {user.email}</p>
       <p>Phone: {user.phone}</p>
+           <button onClick={() => navigate("/users")}> Back </button>
 
-      <button onClick={() => navigate("/users")}>Back</button>
     </div>
   );
 }
